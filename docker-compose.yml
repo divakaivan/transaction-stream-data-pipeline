@@ -1,0 +1,97 @@
+networks:
+  bridge:
+    driver: bridge
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=32181
+      - ZOOKEPER_TICK_TIME=2000
+    networks:
+      bridge:
+        aliases:
+          - zookeeper
+  
+  kafka:
+    image: confluentinc/cp-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ADVERTISED_HOST_NAME=0.0.0.0
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - JMX_PORT=9999
+    networks:
+      bridge:
+        aliases:
+          - kafka
+
+  kafka-producer:
+    build:
+      context: ./kafka-producer
+    container_name: kafka-producer
+    depends_on:
+      - kafka
+      - postgres
+      - kafka-consumer
+    environment:
+      - KAFKA_SERVER=kafka:9092
+      - ZOOKEEPER_SERVER=zookeeper:32181
+      - PRODUCER_INTERVAL=100
+    networks:
+      - bridge
+
+  kafka-consumer:
+    build:
+      context: ./kafka-consumer
+    container_name: kafka-consumer
+    depends_on:
+      - kafka
+      - postgres
+    environment:
+      - KAFKA_SERVER=kafka:9092
+      - ZOOKEEPER_SERVER=zookeeper:32181
+      - PRODUCER_INTERVAL=100
+    networks:
+      - bridge
+
+  ui:
+    build:
+      context: ./ui
+    container_name: ui
+    restart: always
+    ports:
+      - "8501:8501"
+    depends_on:
+      - postgres
+    environment:
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+    networks:
+      - bridge
+
+  postgres:
+    build:
+      context: ./postgres
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      - "5432:5432"
+    networks:
+      - bridge
+
+volumes:
+  settings:
+  data:
