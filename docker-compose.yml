@@ -37,6 +37,8 @@ services:
       - kafka
       - postgres
       - kafka-consumer
+    env_file:
+      - .env
     environment:
       - KAFKA_SERVER=kafka:9092
       - ZOOKEEPER_SERVER=zookeeper:32181
@@ -89,6 +91,18 @@ services:
         max-file: "3"
     ports:
       - "5432:5432"
+    networks:
+      - bridge
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
     networks:
       - bridge
 
