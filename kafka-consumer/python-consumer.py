@@ -137,167 +137,96 @@
         'transfer_group': None
       },
 """
-
 from kafka import KafkaConsumer
 import json
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
 from datetime import datetime
-from pyspark.sql.functions import from_json, col
+import psycopg2
+from psycopg2.extras import execute_values
 
-spark = SparkSession.builder \
-    .appName("KafkaConsumer") \
-    .getOrCreate()
-
-full_schema = StructType([
-    StructField("id", StringType(), True),
-    StructField("object", StringType(), True),
-    StructField("amount", IntegerType(), True),
-    StructField("amount_captured", IntegerType(), True),
-    StructField("amount_refunded", IntegerType(), True),
-    StructField("application", StringType(), True),
-    StructField("application_fee", StringType(), True),
-    StructField("application_fee_amount", StringType(), True),
-    StructField("balance_transaction", StringType(), True),
-    StructField("billing_details", StringType(), True),
-    StructField("calculated_statement_descriptor", StringType(), True),
-    StructField("captured", StringType(), True),
-    StructField("created", StringType(), True),
-    StructField("currency", StringType(), True),
-    StructField("customer", StringType(), True),
-    StructField("description", StringType(), True),
-    StructField("destination", StringType(), True),
-    StructField("dispute", StringType(), True),
-    StructField("disputed", StringType(), True),
-    StructField("failure_balance_transaction", StringType(), True),
-    StructField("failure_code", StringType(), True),
-    StructField("failure_message", StringType(), True),
-    StructField("fraud_details", StringType(), True),
-    StructField("invoice", StringType(), True),
-    StructField("livemode", StringType(), True),
-    StructField("metadata", StringType(), True),
-    StructField("on_behalf_of", StringType(), True),
-    StructField("order", StringType(), True),
-    StructField("outcome", StringType(), True),
-    StructField("paid", StringType(), True),
-    StructField("payment_intent", StringType(), True),
-    StructField("payment_method", StringType(), True),
-    StructField("payment_method_details", StringType(), True),
-    StructField("receipt_email", StringType(), True),
-    StructField("receipt_number", StringType(), True),
-    StructField("receipt_url", StringType(), True),
-    StructField("refunded", StringType(), True),
-    StructField("review", StringType(), True),
-    StructField("shipping", StringType(), True),
-    StructField("source", StringType(), True),
-    StructField("source_transfer", StringType(), True),
-    StructField("statement_descriptor", StringType(), True),
-    StructField("statement_descriptor_suffix", StringType(), True),
-    StructField("status", StringType(), True),
-    StructField("transfer_data", StringType(), True),
-    StructField("transfer_group", StringType(),True)
-])
-
-
-# # connect to postgres
-# conn = psycopg2.connect(
-#     dbname='postgres',
-#     user='postgres',
-#     password='password',
-#     host='postgres',
-#     port='5432'
-# )
-
-# cur = conn.cursor()
-
-# connect to kafka
-# info should match the kafka-producer
 kafka_nodes = 'kafka:9092'
 my_topic = 'transactions'
 
+conn = psycopg2.connect(
+    dbname='postgres',
+    user='postgres',
+    password='password',
+    host='postgres',
+    port='5432'
+)
+cur = conn.cursor()
+
 consumer = KafkaConsumer(my_topic,
-                        bootstrap_servers=kafka_nodes, api_version=(2, 0, 2),
-                        value_deserializer=lambda x: json.loads(x.decode('utf-8')))
+                         bootstrap_servers=kafka_nodes,
+                         api_version=(2, 0, 2),
+                         value_deserializer=lambda x: json.loads(x.decode('utf-8')))
 
-chosen_vars = []
-schema_types_chosen = StructType([
-    StructField("transaction_id", StringType(), True),
-    StructField("amount", IntegerType(), True),
-    StructField("currency", StringType(), True),
-    StructField("created", StringType(), True),
-    StructField("network_status", StringType(), True),
-    StructField("risk_level", StringType(), True),
-    StructField("risk_score", IntegerType(), True),
-    StructField("seller_message", StringType(), True),
-    StructField("paid", StringType(), True),
-    StructField("card_brand", StringType(), True),
-    StructField("receipt_number", StringType(), True),
-    StructField("receipt_url", StringType(), True)
-])
-
-df = spark.readStream \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", kafka_nodes) \
-    .option("subscribe", my_topic) \
-    .load()
-
-# keep for now. not sure if needed
-# import os
-# os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.2.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0 pyspark-shell'
-
-df = df.selectExpr("CAST(value AS STRING)") \
-    .select(from_json(col("value"), full_schema).alias("data")) \
-    .select("data.*")
-
-processed_df = df.filter(col("amount") > 100)
-
-# Write processed data to console for testing
-query = processed_df.writeStream \
-    .outputMode("append") \
-    .format("console") \
-    .start()
-
-# Wait for the streaming query to terminate
-query.awaitTermination()
-
-# Stop Spark session
-spark.stop()
-
-# empty_rdd = spark.sparkContext.emptyRDD()
-# df = spark.createDataFrame(empty_rdd, full_schema)
-
-# for message in consumer:
-#     all_transactions: list = message.value.get('transactions').get('data')
+def insert_transactions(transactions):
+    query = """
+    INSERT INTO transactions (
+        transaction_id, amount, currency, created, network_status, 
+        risk_level, risk_score, seller_message, paid, card_brand, 
+        receipt_number, receipt_url
+    ) VALUES %s
+    ON CONFLICT (transaction_id) DO NOTHING
+    """
     
-#     if all_transactions:
-#         for transaction in all_transactions:
-#             transaction_id = transaction.get('id')
-#             amount = transaction.get('amount')
-#             currency = transaction.get('currency')
-#             created = datetime.fromtimestamp(transaction.get('created'))
-#             network_status = transaction.get('outcome').get('network_status')
-#             risk_level = transaction.get('outcome').get('risk_level')
-#             risk_score = transaction.get('outcome').get('risk_score')
-#             seller_message = transaction.get('outcome').get('seller_message')
-#             paid = transaction.get('paid')
-#             card_brand = transaction.get('payment_method_details').get('card').get('brand')
-#             receipt_number = transaction.get('receipt_number')
-#             receipt_url = transaction.get('receipt_url')
-#             chosen_vars.append({
-#                 'transaction_id': transaction_id,
-#                 'amount': amount,
-#                 'currency': currency,
-#                 'created': created,
-#                 'network_status': network_status,
-#                 'risk_level': risk_level,
-#                 'risk_score': risk_score,
-#                 'seller_message': seller_message,
-#                 'paid': paid,
-#                 'card_brand': card_brand,
-#                 'receipt_number': receipt_number,
-#                 'receipt_url': receipt_url
-#             })
-
-# # Stop the Spark session when done
-# spark.stop()
+    values = [
+        (
+            t['transaction_id'],
+            t['amount'],
+            t['currency'],
+            t['created'],
+            t['network_status'],
+            t['risk_level'],
+            t['risk_score'],
+            t['seller_message'],
+            t['paid'],
+            t['card_brand'],
+            t['receipt_number'],
+            t['receipt_url']
+        ) for t in transactions
+    ]
     
+    execute_values(cur, query, values)
+    conn.commit()
+
+for message in consumer:
+    all_transactions = message.value.get('transactions')
+    
+    chosen_vars = []
+    for transaction in all_transactions:
+        transaction_id = transaction.get('id')
+        amount = transaction.get('amount')
+        currency = transaction.get('currency')
+        created = datetime.fromtimestamp(transaction.get('created'))
+        network_status = transaction.get('outcome', {}).get('network_status')
+        risk_level = transaction.get('outcome', {}).get('risk_level')
+        risk_score = transaction.get('outcome', {}).get('risk_score')
+        seller_message = transaction.get('outcome', {}).get('seller_message')
+        paid = transaction.get('paid')
+        card_brand = transaction.get('payment_method_details', {}).get('card', {}).get('brand')
+        receipt_number = transaction.get('receipt_number')
+        receipt_url = transaction.get('receipt_url')
+        
+        new_transaction = {
+            'transaction_id': transaction_id,
+            'amount': amount,
+            'currency': currency,
+            'created': created,
+            'network_status': network_status,
+            'risk_level': risk_level,
+            'risk_score': risk_score,
+            'seller_message': seller_message,
+            'paid': paid,
+            'card_brand': card_brand,
+            'receipt_number': receipt_number,
+            'receipt_url': receipt_url
+        }
+        
+        chosen_vars.append(new_transaction)
+    
+    if chosen_vars:
+        insert_transactions(chosen_vars)
+
+cur.close()
+conn.close()
