@@ -96,6 +96,18 @@ services:
     networks:
       - bridge
 
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/dashboards:/opt/grafana/dashboards
+    networks:
+      - bridge
+    restart: always
+
 volumes:
   settings:
   data:
+  grafana_data: {}
