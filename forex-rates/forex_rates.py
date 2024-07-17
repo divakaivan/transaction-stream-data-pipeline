@@ -23,7 +23,7 @@ def insert_into_db(data):
         password=os.getenv("POSTGRES_PASSWORD")
     )
     cursor = conn.cursor()
-
+    # doing it here so I do not lose the already loaded data into postgres
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS forex_rates (
             date DATE PRIMARY KEY,
