@@ -83,7 +83,7 @@ models:
     columns:
       - name: id
         data_type: string
-        description: "ID of the outcome"
+        description: "ID of the Charge"
         data_tests:
           - not_null:
               severity: warn
