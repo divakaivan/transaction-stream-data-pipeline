@@ -39,4 +39,6 @@
 
 * add PySpark tests
 * use an orchestrator
-* use more data (maybe find an alternative transactions data source because the Stripe API has a 25 rate limit) for a better Grafana visualisation
+* use more data for a better Grafana visualisation
+  * maybe find an alternative transactions data source because the Stripe API has a 25 rate limit
+  * also many of the generated values in a transaction from the Stripe API are null
