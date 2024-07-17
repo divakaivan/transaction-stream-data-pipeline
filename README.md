@@ -46,8 +46,8 @@
 # Setup 
 
 1. `git clone https://github.com/divakaivan/transaction-stream-data-pipeline.git`
-2. rename `sample.env` to `.env` and fill in the necessary environment variables
-3. type `make` to see the setup options
+2. Rename `sample.env` to `.env` and fill in the necessary environment variables
+3. Type `make` in the terminal to see the setup options
 ```bash
 Usage: make [option]
 
