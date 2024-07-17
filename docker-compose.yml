@@ -86,6 +86,16 @@ services:
     networks:
       - bridge
 
+  forex-rates:
+    build:
+      context: ./forex-rates
+    container_name: forex-rates
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - bridge
+
 volumes:
   settings:
   data:
