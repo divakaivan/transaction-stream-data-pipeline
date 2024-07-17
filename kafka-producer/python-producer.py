@@ -5,21 +5,20 @@ import schedule
 from json import dumps
 
 from kafka import KafkaProducer
-from pyspark.sql import SparkSession
 
 import stripe
 
-# kafka config
-kafka_nodes = 'kafka:9092'
-my_topic = 'transactions'
+kafka_nodes = os.getenv('KAFKA_SERVER')
+my_topic = os.getenv('KAFKA_TOPIC')
 
 def create_test_charge():
     try:
-        amount = random.randint(100, 1000000)
+        amount = random.randint(100, 1000000) # 1p to £10,000
         stripe.api_key = os.getenv('STRIPE_API_KEY') 
-        charge = stripe.PaymentIntent.create(
+        charge = stripe.Charge.create(
             amount=amount,
-            currency='gbp'
+            currency='gbp',
+            source='tok_visa',
         )
         return charge
     except stripe.error.CardError as e:
@@ -35,7 +34,6 @@ def send_to_kafka(charges):
                              value_serializer=lambda x: dumps(x).encode('utf-8'))
 
         my_data = {'transactions': charges}
-
         prod.send(my_topic, value=my_data)
         prod.flush()
 
@@ -45,16 +43,11 @@ def send_to_kafka(charges):
         print(f"Error sending to Kafka: {e}")
     
 def gen_data():
-    num_charges = 25
-    charges_rdd = spark.sparkContext.parallelize(range(num_charges))
-    charges = charges_rdd.map(lambda _: create_test_charge()).filter(lambda x: x is not None).collect()
-
+    num_charges = 25 # stripe create limit
+    charges = [create_test_charge() for _ in range(num_charges)]
     send_to_kafka(charges)
 
 if __name__ == '__main__':
-    spark = SparkSession.builder \
-            .appName("StripeChargesToKafka") \
-            .getOrCreate()
     schedule.every(3).seconds.do(gen_data)
     try:
         while True:
@@ -62,5 +55,3 @@ if __name__ == '__main__':
             time.sleep(0.5)
     except KeyboardInterrupt:
         print("Stopping...")
-    finally:
-        spark.stop()
