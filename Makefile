@@ -25,3 +25,11 @@ start:  ## Start docker services (detached mode)
 stop:  ## Stop docker services
 	docker-compose -f $(DOCKER_COMPOSE_FILE) stop
 
+.PHONY: dbt-limit
+dbt-test:  ## Run dbt with LIMIT 100
+	cd data_modelling && dbt build
+
+.PHONY: dbt-full
+dbt-full:  ## Run dbt with full data
+	cd data_modelling && dbt build --vars '{"is_dev_run": false}'
+
