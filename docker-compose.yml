@@ -48,20 +48,6 @@ services:
     networks:
       - bridge
 
-  # ui:
-  #   build:
-  #     context: ./ui
-  #   container_name: ui
-  #   restart: always
-  #   ports:
-  #     - "8501:8501"
-  #   depends_on:
-  #     - postgres
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - bridge
-
   postgres:
     build:
       context: ./postgres
