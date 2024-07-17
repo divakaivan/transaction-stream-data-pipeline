@@ -33,7 +33,7 @@
 
 # Visualisation
 
-<img width="1482" alt="image" src="https://github.com/user-attachments/assets/c5941d25-59e2-4029-88be-2aae36d4baea">
+<img width="1485" alt="image" src="https://github.com/user-attachments/assets/0eedf633-9ac3-4821-8a5b-64c86bd166b3">
 
 # Considerations for improvements
 
