@@ -33,7 +33,7 @@
 
 # Visualisation
 
-tbd
+<img width="1482" alt="image" src="https://github.com/user-attachments/assets/c5941d25-59e2-4029-88be-2aae36d4baea">
 
 # Considerations for improvements
 
