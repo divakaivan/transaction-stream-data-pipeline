@@ -1,0 +1,314 @@
+version: 2
+
+sources:
+  - name: postgres
+    database: postgres
+    schema: public
+    tables:
+      - name: forex_rates
+
+models:
+  - name: dim_forex_rates
+    description: "Daily Forex rates for top currencies"
+    columns:
+      - name: date_rates
+        data_type: date
+        description: "Date of the forex rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: usd
+        data_type: float
+        description: "USD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: eur
+        data_type: float
+        description: "EUR to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: jpy
+        data_type: float
+        description: "JPY to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: cad
+        data_type: float
+        description: "CAD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: aud
+        data_type: float
+        description: "AUD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: chf
+        data_type: float
+        description: "CHF to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: cny
+        data_type: float
+        description: "CNY to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: sek
+        data_type: float
+        description: "SEK to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: nzd
+        data_type: float
+        description: "NZD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: mxn
+        data_type: float
+        description: "MXN to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+
+  - name: dim_billing_details
+    description: "Billing details for a charge"
+    columns:
+      - name: id
+        data_type: string
+        description: "ID of the outcome"
+        data_tests:
+          - not_null:
+              severity: warn
+          - unique:
+              severity: warn
+      - name: address_city
+        data_type: string
+        description: "City of the address"
+      - name: address_country
+        data_type: string
+        description: "Country of the address"
+      - name: address_line1
+        data_type: string
+        description: "Address line 1"
+      - name: address_line2
+        data_type: string
+        description: "Address line 2"
+      - name: address_postal_code
+        data_type: string
+        description: "Postal code of the address"
+      - name: address_state
+        data_type: string
+        description: "State of the address"
+      - name: email
+        data_type: string
+        description: "Email of the customer"
+      - name: name
+        data_type: string
+        description: "Name of the customer"
+      - name: phone
+        data_type: string
+        description: "Phone number of the customer"
+
+  - name: dim_outcome_details
+    description: "Outcome details for a charge"
+    columns:
+      - name: id
+        data_type: string
+        description: "ID of the Charge"
+        data_tests:
+          - not_null:
+              severity: warn
+          - unique:
+              severity: warn
+      - name: network_status
+        data_type: string
+        description: "Network status of the outcome"
+      - name: reason
+        data_type: string
+        description: "Reason for the outcome"
+      - name: risk_level
+        data_type: string
+        description: "Risk level of the outcome (low, normal, high)"
+      - name: risk_score
+        data_type: float
+        description: "Risk score of the outcome"
+      - name: seller_message
+        data_type: string
+        description: "Seller message of the outcome"
+      - name: outcome_type
+        data_type: string
+        description: "Type of the outcome"
+
+
+  - name: dim_payment_method_details
+    description: "Payment method details for a charge"
+    columns:
+      - name: id
+        data_type: string
+        description: "ID of the Charge"
+        data_tests:
+          - not_null:
+              severity: warn
+          - unique:
+              severity: warn
+      - name: card_amount_authorized
+        data_type: float
+        description: "Authorized amount on the card"
+      - name: card_brand
+        data_type: string
+        description: "Brand of the card"
+      - name: card_checks_address_line1_check
+        data_type: string
+        description: "Address line 1 check result"
+      - name: card_checks_address_postal_code_check
+        data_type: string
+        description: "Postal code check result"
+      - name: card_checks_cvc_check
+        data_type: string
+        description: "CVC check result"
+      - name: card_country
+        data_type: string
+        description: "Country of the card"
+      - name: card_exp_month
+        data_type: integer
+        description: "Expiration month of the card"
+      - name: card_exp_year
+        data_type: integer
+        description: "Expiration year of the card"
+      - name: card_extended_authorization_status
+        data_type: string
+        description: "Extended authorization status of the card"
+      - name: card_fingerprint
+        data_type: string
+        description: "Fingerprint of the card"
+      - name: card_funding
+        data_type: string
+        description: "Funding source of the card"
+      - name: card_incremental_authorization_status
+        data_type: string
+        description: "Incremental authorization status of the card"
+      - name: card_installments
+        data_type: integer
+        description: "Number of installments for the card"
+      - name: card_last4
+        data_type: string
+        description: "Last 4 digits of the card"
+      - name: card_mandate
+        data_type: string
+        description: "Mandate of the card"
+      - name: card_multicapture_status
+        data_type: string
+        description: "Multicapture status of the card"
+      - name: card_network
+        data_type: string
+        description: "Network of the card"
+      - name: card_network_token_used
+        data_type: string
+        description: "Whether a network token was used for the card"
+      - name: card_overcapture_maximum_amount
+        data_type: float
+        description: "Maximum amount for overcapture on the card"
+      - name: card_overcapture_status
+        data_type: string
+        description: "Overcapture status of the card"
+      - name: card_three_d_secure
+        data_type: string
+        description: "3D Secure status of the card"
+      - name: card_wallet
+        data_type: string
+        description: "Wallet used for the card"
+      - name: type
+        data_type: string
+        description: "Type of the payment method"
+
+  - name: dim_source_details
+    description: "Source details for a charge"
+    columns:
+      - name: id
+        data_type: string
+        description: "ID of the Charge"
+        data_tests:
+          - not_null:
+              severity: warn
+          - unique:
+              severity: warn
+      - name: address_city
+        data_type: string
+        description: "City of the address"
+      - name: address_country
+        data_type: string
+        description: "Country of the address"
+      - name: address_line1
+        data_type: string
+        description: "Address line 1"
+      - name: address_line1_check
+        data_type: string
+        description: "Address line 1 check result"
+      - name: address_line2
+        data_type: string
+        description: "Address line 2"
+      - name: address_state
+        data_type: string
+        description: "State of the address"
+      - name: address_zip
+        data_type: string
+        description: "ZIP code of the address"
+      - name: address_zip_check
+        data_type: string
+        description: "ZIP code check result"
+      - name: brand
+        data_type: string
+        description: "Brand of the source"
+      - name: country
+        data_type: string
+        description: "Country of the source"
+      - name: customer
+        data_type: string
+        description: "Customer associated with the source"
+      - name: cvc_check
+        data_type: string
+        description: "CVC check result"
+      - name: dynamic_last4
+        data_type: string
+        description: "Dynamic last 4 digits of the source"
+      - name: exp_month
+        data_type: integer
+        description: "Expiration month of the source"
+      - name: exp_year
+        data_type: integer
+        description: "Expiration year of the source"
+      - name: fingerprint
+        data_type: string
+        description: "Fingerprint of the source"
+      - name: funding
+        data_type: string
+        description: "Funding source of the source"
+      - name: source_id
+        data_type: string
+        description: "ID of the source"
+      - name: last4
+        data_type: string
+        description: "Last 4 digits of the source"
+      - name: name
+        data_type: string
+        description: "Name of the source"
+      - name: object_type
+        data_type: string
+        description: "Type of the source object"
+      - name: tokenization_method
+        data_type: string
+        description: "Tokenization method of the source"
+      - name: wallet
+        data_type: string
+        description: "Wallet used for the source"
+      - name: transfer
+        data_type: string
+        description: "Transfer associated with the source"

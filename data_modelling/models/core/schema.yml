@@ -1,0 +1,110 @@
+version: 2
+
+models:
+  - name: facts_transactions
+    description: "Transaction facts"
+    columns:
+      - name: transaction_id
+        description: "Transaction ID"
+        data_type: string
+        data_tests:
+          - not_null:
+              severity: warn
+          - unique:
+              severity: warn
+      - name: transaction_date
+        description: "Timestamp of when the transaction was created"
+        data_type: datetime
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: amount
+        description: "Amount of the transaction - 100 = £1"
+        data_type: numeric
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: amount_captured
+        description: "Amount in bani captured (can be less than the amount attribute on the charge if a partial capture was made)"
+        data_type: numeric
+      - name: amount_refunded
+        description: "Amount in bani refunded (can be less than the amount attribute on the charge if a partial refund was issued)"
+        data_type: numeric
+      - name: currency
+        description: "Three-letter ISO currency code, in lowercase Must be a supported currency"
+        data_type: string
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: customer
+        description: "The ID of the customer this charge is for if one exists"
+        data_type: string
+      - name: payment_intent
+        description: "The ID of the PaymentIntent associated with this charge, if one exists"
+        data_type: string
+      - name: payment_method
+        description: "ID of the payment method used in this charge"
+        data_type: string
+      - name: status
+        description: "The status of the payment is either succeeded, pending, or failed"
+        data_type: string
+      - name: forex_usd
+        data_type: numeric
+        description: "USD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_eur
+        data_type: numeric
+        description: "EUR to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_jpy
+        data_type: numeric
+        description: "JPY to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_cad
+        data_type: numeric
+        description: "CAD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_aud
+        data_type: numeric
+        description: "AUD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_chf
+        data_type: numeric
+        description: "CHF to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_cny
+        data_type: numeric
+        description: "CNY to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_sek
+        data_type: numeric
+        description: "SEK to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_nzd
+        data_type: numeric
+        description: "NZD to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: forex_mxn
+        data_type: numeric
+        description: "MXN to GBP rate"
+        data_tests:
+          - not_null:
+              severity: warn
