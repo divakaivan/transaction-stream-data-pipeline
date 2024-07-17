@@ -42,3 +42,20 @@
 * use more data for a better Grafana visualisation
   * maybe find an alternative transactions data source because the Stripe API has a 25 rate limit
   * also many of the generated values in a transaction from the Stripe API are null
+
+# Setup 
+
+1. `git clone https://github.com/divakaivan/transaction-stream-data-pipeline.git`
+2. rename `sample.env` to `.env` and fill in the necessary environment variables
+3. type `make` to see the setup options
+```bash
+Usage: make [option]
+
+Options:
+  help                 Show this help message
+  build                Build docker services
+  start                Start docker services (detached mode)
+  stop                 Stop docker services
+  dbt-test             Run dbt with LIMIT 100
+  dbt-full             Run dbt with full data
+```
