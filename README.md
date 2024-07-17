@@ -2,7 +2,7 @@
 
 ![transactions_stream_project_diagram](/project-png/transactions_stream_project_diagram.png)
 
-* **Stripe**: Using Stripe's API as the source of generating real-like transaction data.
+* **Stripe**: Using Stripe's API as the source of generating realistic transaction data.
 
 * **Apache Kafka**: Stripe transaction data is streamed into Apache Kafka. It handles the data streams and ensures they are processed in real-time.
 
