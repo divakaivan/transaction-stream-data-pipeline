@@ -10,7 +10,7 @@
 
 * **PySpark**: The data from Kafka is then processed using PySpark Structured Streaming. This involves transforming individual transaction data into rows fit for a database.
 
-* **Forex API**: GBP/x exchange rates are taken from an online API and updates every 24 hours.
+* **Forex API**: GBP/x exchange rates are taken from an online API and updated every 24 hours.
 
 * **PostgreSQL**: After processing, the data is stored in PostgreSQL.
 
