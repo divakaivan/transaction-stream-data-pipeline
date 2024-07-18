@@ -85,9 +85,12 @@ services:
   grafana:
     image: grafana/grafana
     user: "472"
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     volumes:
+      - ./grafana/dashboards/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
       - ./grafana/dashboards:/opt/grafana/dashboards
     networks:
       - bridge

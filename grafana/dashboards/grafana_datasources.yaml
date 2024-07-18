@@ -1,0 +1,15 @@
+# config file version
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    url: $POSTGRES_HOST:5432
+    database: $POSTGRES_DB
+    user: $POSTGRES_USER
+    secureJsonData:
+      password: $POSTGRES_PASSWORD
+    jsonData:
+      sslmode: 'disable'
+      database: $POSTGRES_DB
