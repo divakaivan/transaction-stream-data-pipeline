@@ -10,7 +10,7 @@
 
 * **PySpark**: The data from Kafka is then processed using PySpark Structured Streaming. This involves transforming individual transaction data into rows fit for a database.
 
-* **Forex API**: GBP/x exchange rates are taken from an online API and updates every 24 hours.
+* **Forex API**: GBP/x exchange rates are taken from an online API and updated every 24 hours.
 
 * **PostgreSQL**: After processing, the data is stored in PostgreSQL.
 
@@ -39,7 +39,9 @@
 
 * add PySpark tests
 * use an orchestrator
-* use more data for a better Grafana visualisation
+* use more data
+  * Spark might be an overkill due to the data amount limitations, but I wanted to learn how to set Spark Streaming up in case data is much more  
+  * for a better Grafana visualisation
   * maybe find an alternative transactions data source because the Stripe API has a 25 rate limit
   * also many of the generated values in a transaction from the Stripe API are null
 
